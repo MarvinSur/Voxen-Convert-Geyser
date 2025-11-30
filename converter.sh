@@ -286,7 +286,7 @@ else
   cd ./target/rp > /dev/null && zip -rq8 geyser_resources_preview.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/rp/geyser_resources_preview.mcpack ./target/packaged/geyser_resources_preview.mcpack
   cd ./target/bp > /dev/null && zip -rq8 geyser_behaviors_preview.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/bp/geyser_behaviors_preview.mcpack ./target/packaged/geyser_behaviors_preview.mcpack
   cd ./target/packaged > /dev/null && zip -rq8 geyser_addon.mcaddon . -i "*_preview.mcpack" && cd ../.. > /dev/null
-  jq 'delpaths([paths | select(.[-1] | strings | startswith("gmdl_atlas_"))])' ./target/rp/textures/terrain_texture.json | sponge ./target/rp/textures/terrain_texture.json
+  jq 'delpaths([paths | select(.[-1] | strings | startswith("voxen_atlas_"))])' ./target/rp/textures/terrain_texture.json | sponge ./target/rp/textures/terrain_texture.json
   cd ./target/rp > /dev/null && zip -rq8 geyser_resources.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/rp/geyser_resources.mcpack ./target/packaged/geyser_resources.mcpack
   mkdir ./target/unpackaged
   mv ./target/rp ./target/unpackaged/rp && mv ./target/bp ./target/unpackaged/bp
@@ -348,7 +348,7 @@ if contains(":") then sub("\\:(.+)"; "") else "minecraft" end
 
 }) | .[]]
 | walk(if type == "object" then with_entries(select(.value != null)) else . end)
-| to_entries | map( ((.value.geyserID = "gmdl_\(1+.key)") | .value))
+| to_entries | map( ((.value.geyserID = "voxen_\(1+.key)") | .value))
 | INDEX(.geyserID)
 
 ' ./assets/minecraft/models/item/*.json > config.json || { status_message error "Invalid JSON exists in block or item folder! See above log."; exit 1; }
@@ -437,8 +437,8 @@ jq --slurpfile hashmap scratch_files/hashmap.json '
     map_values(
         .geyserID as $gid 
         | . += {
-          "path_hash": ("gmdl_" + ($hashmap[] | .[($gid)] | .[0])),
-          "geometry": ("geo_" + ($hashmap[] | .[($gid)] | .[1]))
+          "path_hash": ("voxen_" + ($hashmap[] | .[($gid)] | .[0])),
+          "geometry": ("voxengeo_" + ($hashmap[] | .[($gid)] | .[1]))
           }
     )
 ' config.json | sponge config.json
@@ -786,7 +786,7 @@ done
 wait # wait for all the jobs to finish
 
 # generate terrain texture atlas
-jq -cR 'split(",")' scratch_files/atlases.csv | jq -s 'map({("gmdl_atlas_" + .[0]): {"textures": ("textures/" + .[0])}}) | add' > scratch_files/atlases.json
+jq -cR 'split(",")' scratch_files/atlases.csv | jq -s 'map({("voxen_atlas_" + .[0]): {"textures": ("textures/" + .[0])}}) | add' > scratch_files/atlases.json
 jq -s '
 .[0] as $atlases
 | .[1] 
@@ -1041,7 +1041,7 @@ do
                 "components": {
                     "minecraft:material_instances": {
                         "*": {
-                            "texture": ("gmdl_atlas_" + $atlas_index),
+                            "texture": ("voxen_atlas_" + $atlas_index),
                             "render_method": $block_material,
                             "face_dimming": false,
                             "ambient_occlusion": false
@@ -1289,7 +1289,7 @@ if [ -f sprites.json ]; then
     do write_id_hash "${predicate}" "${icon}"  "scratch_files/sprite_hashes.csv" &
   done < scratch_files/sprites.csv > /dev/null
 
-  jq -cR 'split(",")' scratch_files/sprite_hashes.csv | jq -s 'map({("gmdl_" + .[1]): {"textures": .[0]}}) | add' > scratch_files/sprite_hashmap.json
+  jq -cR 'split(",")' scratch_files/sprite_hashes.csv | jq -s 'map({("voxen_" + .[1]): {"textures": .[0]}}) | add' > scratch_files/sprite_hashmap.json
 
   jq -s '
   .[0] as $icon_sprites
@@ -1334,7 +1334,7 @@ mkdir ./target/packaged
 cd ./target/rp > /dev/null && zip -rq8 geyser_resources_preview.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/rp/geyser_resources_preview.mcpack ./target/packaged/geyser_resources_preview.mcpack
 cd ./target/bp > /dev/null && zip -rq8 geyser_behaviors_preview.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/bp/geyser_behaviors_preview.mcpack ./target/packaged/geyser_behaviors_preview.mcpack
 cd ./target/packaged > /dev/null && zip -rq8 geyser_addon.mcaddon . -i "*_preview.mcpack" && cd ../.. > /dev/null
-jq 'delpaths([paths | select(.[-1] | strings | startswith("gmdl_atlas_"))])' ./target/rp/textures/terrain_texture.json | sponge ./target/rp/textures/terrain_texture.json
+jq 'delpaths([paths | select(.[-1] | strings | startswith("voxen_atlas_"))])' ./target/rp/textures/terrain_texture.json | sponge ./target/rp/textures/terrain_texture.json
 cd ./target/rp > /dev/null && zip -rq8 geyser_resources.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/rp/geyser_resources.mcpack ./target/packaged/geyser_resources.mcpack
 mkdir ./target/unpackaged
 mv ./target/rp ./target/unpackaged/rp && mv ./target/bp ./target/unpackaged/bp
