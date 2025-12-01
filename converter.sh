@@ -174,7 +174,7 @@ else
   uuid4=($(uuidgen))
 
   # get pack description if we have one
-  pack_desc="$(jq -r '(.pack.description // "Geyser 3D Items Resource Pack")' ./pack.mcmeta)"
+  pack_desc="$(jq -r '(.pack.description // "Voxen Development Converter")' ./pack.mcmeta)"
 
   # generate rp manifest.json
   status_message process "Generating resource pack manifest"
@@ -182,7 +182,7 @@ else
   {
       "format_version": 2,
       "header": {
-          "description": "Adds 3D items for use with a Geyser proxy",
+          "description": "Voxen Development Converter",
           "name": $pack_desc,
           "uuid": ($uuid1 | ascii_downcase),
           "version": [1, 0, 0],
@@ -190,7 +190,7 @@ else
       },
       "modules": [
           {
-              "description": "Adds 3D items for use with a Geyser proxy",
+              "description": "Voxen Development Converter",
               "type": "resources",
               "uuid": ($uuid2 | ascii_downcase),
               "version": [1, 0, 0]
@@ -205,7 +205,7 @@ else
   {
       "format_version": 2,
       "header": {
-          "description": "Adds 3D items for use with a Geyser proxy",
+          "description": "Voxen Development Converter",
           "name": $pack_desc,
           "uuid": ($uuid3 | ascii_downcase),
           "version": [1, 0, 0],
@@ -213,7 +213,7 @@ else
       },
       "modules": [
           {
-              "description": "Adds 3D items for use with a Geyser proxy",
+              "description": "Voxen Development Converter",
               "type": "data",
               "uuid": ($uuid4 | ascii_downcase),
               "version": [1, 0, 0]
@@ -232,7 +232,7 @@ else
   status_message process "Generating resource pack terrain texture definition"
   jq -nc '
   {
-    "resource_pack_name": "geyser_custom",
+    "resource_pack_name": "voxen_dev",
     "texture_name": "atlas.terrain",
     "texture_data": {
     }
@@ -243,7 +243,7 @@ else
   status_message process "Generating resource pack item texture definition"
   jq -nc '
   {
-    "resource_pack_name": "geyser_custom",
+    "resource_pack_name": "voxen_dev",
     "texture_name": "atlas.items",
     "texture_data": {}
   }
@@ -255,18 +255,18 @@ else
   {
     "format_version": "1.8.0",
     "animations": {
-      "animation.geyser_custom.disable": {
+      "animation.voxen_dev.disable": {
         "loop": true,
         "override_previous_animation": true,
         "bones": {
-          "geyser_custom": {
+          "voxen_dev": {
             "scale": 0
           }
         }
       }
     }
   }
-  ' | sponge ./target/rp/animations/animation.geyser_custom.disable.json
+  ' | sponge ./target/rp/animations/animation.voxen_dev.disable.json
   cd -
   python manager.py
   cd ./staging
@@ -286,7 +286,7 @@ else
   cd ./target/rp > /dev/null && zip -rq8 geyser_resources_preview.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/rp/geyser_resources_preview.mcpack ./target/packaged/geyser_resources_preview.mcpack
   cd ./target/bp > /dev/null && zip -rq8 geyser_behaviors_preview.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/bp/geyser_behaviors_preview.mcpack ./target/packaged/geyser_behaviors_preview.mcpack
   cd ./target/packaged > /dev/null && zip -rq8 geyser_addon.mcaddon . -i "*_preview.mcpack" && cd ../.. > /dev/null
-  jq 'delpaths([paths | select(.[-1] | strings | startswith("gmdl_atlas_"))])' ./target/rp/textures/terrain_texture.json | sponge ./target/rp/textures/terrain_texture.json
+  jq 'delpaths([paths | select(.[-1] | strings | startswith("voxen_atlas_"))])' ./target/rp/textures/terrain_texture.json | sponge ./target/rp/textures/terrain_texture.json
   cd ./target/rp > /dev/null && zip -rq8 geyser_resources.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/rp/geyser_resources.mcpack ./target/packaged/geyser_resources.mcpack
   mkdir ./target/unpackaged
   mv ./target/rp ./target/unpackaged/rp && mv ./target/bp ./target/unpackaged/bp
@@ -348,7 +348,7 @@ if contains(":") then sub("\\:(.+)"; "") else "minecraft" end
 
 }) | .[]]
 | walk(if type == "object" then with_entries(select(.value != null)) else . end)
-| to_entries | map( ((.value.geyserID = "gmdl_\(1+.key)") | .value))
+| to_entries | map( ((.value.geyserID = "voxen_\(1+.key)") | .value))
 | INDEX(.geyserID)
 
 ' ./assets/minecraft/models/item/*.json > config.json || { status_message error "Invalid JSON exists in block or item folder! See above log."; exit 1; }
@@ -437,8 +437,8 @@ jq --slurpfile hashmap scratch_files/hashmap.json '
     map_values(
         .geyserID as $gid 
         | . += {
-          "path_hash": ("gmdl_" + ($hashmap[] | .[($gid)] | .[0])),
-          "geometry": ("geo_" + ($hashmap[] | .[($gid)] | .[1]))
+          "path_hash": ("voxen_" + ($hashmap[] | .[($gid)] | .[0])),
+          "geometry": ("voxengeo_" + ($hashmap[] | .[($gid)] | .[1]))
           }
     )
 ' config.json | sponge config.json
@@ -517,7 +517,7 @@ jq -c --arg pack_desc "${pack_desc}" --arg uuid1 "${uuid1}" --arg uuid3 "${uuid3
 status_message process "Generating resource pack terrain texture definition"
 jq -nc '
 {
-  "resource_pack_name": "geyser_custom",
+  "resource_pack_name": "voxen_dev",
   "texture_name": "atlas.terrain",
   "texture_data": {
   }
@@ -528,7 +528,7 @@ jq -nc '
 status_message process "Generating resource pack item texture definition"
 jq -nc '
 {
-  "resource_pack_name": "geyser_custom",
+  "resource_pack_name": "voxen_dev",
   "texture_name": "atlas.items",
   "texture_data": {}
 }
@@ -540,18 +540,18 @@ jq -nc '
 {
   "format_version": "1.8.0",
   "animations": {
-    "animation.geyser_custom.disable": {
+    "animation.voxen_dev.disable": {
       "loop": true,
       "override_previous_animation": true,
       "bones": {
-        "geyser_custom": {
+        "voxen_dev": {
           "scale": 0
         }
       }
     }
   }
 }
-' | sponge ./target/rp/animations/animation.geyser_custom.disable.json
+' | sponge ./target/rp/animations/animation.voxen_dev.disable.json
 
 # DO DEFAULT ASSETS HERE!!
 # get the current default textures and merge them with our rp
@@ -786,7 +786,7 @@ done
 wait # wait for all the jobs to finish
 
 # generate terrain texture atlas
-jq -cR 'split(",")' scratch_files/atlases.csv | jq -s 'map({("gmdl_atlas_" + .[0]): {"textures": ("textures/" + .[0])}}) | add' > scratch_files/atlases.json
+jq -cR 'split(",")' scratch_files/atlases.csv | jq -s 'map({("voxen_atlas_" + .[0]): {"textures": ("textures/" + .[0])}}) | add' > scratch_files/atlases.json
 jq -s '
 .[0] as $atlases
 | .[1] 
@@ -869,7 +869,7 @@ do
       [((- .origin[0] + 8) | roundit), (.origin[1] | roundit), ((.origin[2] - 8) | roundit)] as $i_piv |
       (if (.axis) == "x" then [(.angle | tonumber * -1), 0, 0] elif (.axis) == "y" then [0, (.angle | tonumber * -1), 0] else [0, 0, (.angle | tonumber)] end) as $i_rot |
       {
-        "parent": "geyser_custom_z",
+        "parent": "voxen_dev_z",
         "pivot": ($i_piv),
         "rotation": ($i_rot),
         "cubes": [($element_array | .[] | select(.rotation == $i_rot and .pivot == $i_piv))]
@@ -879,7 +879,7 @@ do
         "format_version": "1.16.0",
         "minecraft:geometry": [{
           "description": {
-            "identifier": ( "geometry.geyser_custom." + ($geometry)),
+            "identifier": ( "geometry.voxen_dev." + ($geometry)),
             "texture_width": 16,
             "texture_height": 16,
             "visible_bounds_width": 4,
@@ -887,26 +887,26 @@ do
             "visible_bounds_offset": [0, 0.75, 0]
           },
           "bones": ([{
-            "name": "geyser_custom",
+            "name": "voxen_dev",
             "binding": $binding,
             "pivot": [0, 8, 0]
           }, {
-            "name": "geyser_custom_x",
-            "parent": "geyser_custom",
+            "name": "voxen_dev_x",
+            "parent": "voxen_dev",
             "pivot": [0, 8, 0]
           }, {
-            "name": "geyser_custom_y",
-            "parent": "geyser_custom_x",
+            "name": "voxen_dev_y",
+            "parent": "voxen_dev_x",
             "pivot": [0, 8, 0]
           }, 
             if ($generated | tobool) == true then ({
-            "name": "geyser_custom_z",
-            "parent": "geyser_custom_y",
+            "name": "voxen_dev_z",
+            "parent": "voxen_dev_y",
             "pivot": [0, 8, 0],
             "texture_meshes": ([{"texture": "default", "position": [0, 8, 0], "rotation": [90, 0, -180], "local_pivot": [8, 0.5, 8]}])
           }) else ({
-            "name": "geyser_custom_z",
-            "parent": "geyser_custom_y",
+            "name": "voxen_dev_z",
+            "parent": "voxen_dev_y",
             "pivot": [0, 8, 0],
             "cubes": ([(element_array | .[] | select(.rotation == null))])
             }) end] + (pivot_groups | map(del(.cubes[].rotation)) | to_entries | map( (.value.name = "rot_\(1+.key)" ) | .value)))
@@ -921,103 +921,103 @@ do
       {
         "format_version": "1.8.0",
         "animations": {
-          ("animation.geyser_custom." + ($geometry) + ".thirdperson_main_hand"): {
+          ("animation.voxen_dev." + ($geometry) + ".thirdperson_main_hand"): {
             "loop": true,
             "bones": {
-              "geyser_custom_x": (if .display.thirdperson_righthand then {
+              "voxen_dev_x": (if .display.thirdperson_righthand then {
                 "rotation": (if .display.thirdperson_righthand.rotation then [(- .display.thirdperson_righthand.rotation[0]), 0, 0] else null end),
                 "position": (if .display.thirdperson_righthand.translation then [(- .display.thirdperson_righthand.translation[0]), (.display.thirdperson_righthand.translation[1]), (.display.thirdperson_righthand.translation[2])] else null end),
                 "scale": (if .display.thirdperson_righthand.scale then [(.display.thirdperson_righthand.scale[0]), (.display.thirdperson_righthand.scale[1]), (.display.thirdperson_righthand.scale[2])] else null end)
               } else null end),
-              "geyser_custom_y": (if .display.thirdperson_righthand.rotation then {
+              "voxen_dev_y": (if .display.thirdperson_righthand.rotation then {
                 "rotation": (if .display.thirdperson_righthand.rotation then [0, (- .display.thirdperson_righthand.rotation[1]), 0] else null end)
               } else null end),
-              "geyser_custom_z": (if .display.thirdperson_righthand.rotation then {
+              "voxen_dev_z": (if .display.thirdperson_righthand.rotation then {
                 "rotation": [0, 0, (.display.thirdperson_righthand.rotation[2])]
               } else null end),
-              "geyser_custom": {
+              "voxen_dev": {
                 "rotation": [90, 0, 0],
                 "position": [0, 13, -3]
               }
             }
           },
-          ("animation.geyser_custom." + ($geometry) + ".thirdperson_off_hand"): {
+          ("animation.voxen_dev." + ($geometry) + ".thirdperson_off_hand"): {
             "loop": true,
             "bones": {
-              "geyser_custom_x": (if .display.thirdperson_lefthand then {
+              "voxen_dev_x": (if .display.thirdperson_lefthand then {
                 "rotation": (if .display.thirdperson_lefthand.rotation then [(- .display.thirdperson_lefthand.rotation[0]), 0, 0] else null end),
                 "position": (if .display.thirdperson_lefthand.translation then [(.display.thirdperson_lefthand.translation[0]), (.display.thirdperson_lefthand.translation[1]), (.display.thirdperson_lefthand.translation[2])] else null end),
                 "scale": (if .display.thirdperson_lefthand.scale then [(.display.thirdperson_lefthand.scale[0]), (.display.thirdperson_lefthand.scale[1]), (.display.thirdperson_lefthand.scale[2])] else null end)
               } else null end),
-              "geyser_custom_y": (if .display.thirdperson_lefthand.rotation then {
+              "voxen_dev_y": (if .display.thirdperson_lefthand.rotation then {
                 "rotation": (if .display.thirdperson_lefthand.rotation then [0, (- .display.thirdperson_lefthand.rotation[1]), 0] else null end)
               } else null end),
-              "geyser_custom_z": (if .display.thirdperson_lefthand.rotation then {
+              "voxen_dev_z": (if .display.thirdperson_lefthand.rotation then {
                 "rotation": [0, 0, (.display.thirdperson_lefthand.rotation[2])]
               } else null end),
-              "geyser_custom": {
+              "voxen_dev": {
                 "rotation": [90, 0, 0],
                 "position": [0, 13, -3]
               }
             }
           },
-          ("animation.geyser_custom." + ($geometry) + ".head"): {
+          ("animation.voxen_dev." + ($geometry) + ".head"): {
             "loop": true,
             "bones": {
-              "geyser_custom_x": {
+              "voxen_dev_x": {
                 "rotation": (if .display.head.rotation then [(- .display.head.rotation[0]), 0, 0] else null end),
                 "position": (if .display.head.translation then [(- .display.head.translation[0] * 0.625), (.display.head.translation[1] * 0.625), (.display.head.translation[2] * 0.625)] else null end),
                 "scale": (if .display.head.scale then (.display.head.scale | map(. * 0.625)) else 0.625 end)
               },
-              "geyser_custom_y": (if .display.head.rotation then {
+              "voxen_dev_y": (if .display.head.rotation then {
                 "rotation": [0, (- .display.head.rotation[1]), 0]
               } else null end),
-              "geyser_custom_z": (if .display.head.rotation then {
+              "voxen_dev_z": (if .display.head.rotation then {
                 "rotation": [0, 0, (.display.head.rotation[2])]
               } else null end),
-              "geyser_custom": {
+              "voxen_dev": {
                 "position": [0, 19.9, 0]
               }
             }
           },
-          ("animation.geyser_custom." + ($geometry) + ".firstperson_main_hand"): {
+          ("animation.voxen_dev." + ($geometry) + ".firstperson_main_hand"): {
             "loop": true,
             "bones": {
-              "geyser_custom": {
+              "voxen_dev": {
                 "rotation": [90, 60, -40],
                 "position": [4, 10, 4],
                 "scale": 1.5
               },
-              "geyser_custom_x": {
+              "voxen_dev_x": {
                 "position": (if .display.firstperson_righthand.translation then [(- .display.firstperson_righthand.translation[0]), (.display.firstperson_righthand.translation[1]), (- .display.firstperson_righthand.translation[2])] else null end),
                 "rotation": (if .display.firstperson_righthand.rotation then [(- .display.firstperson_righthand.rotation[0]), 0, 0] else [0.1, 0.1, 0.1] end),
                 "scale": (if .display.firstperson_righthand.scale then (.display.firstperson_righthand.scale) else null end)
               },
-              "geyser_custom_y": (if .display.firstperson_righthand.rotation then {
+              "voxen_dev_y": (if .display.firstperson_righthand.rotation then {
                 "rotation": [0, (- .display.firstperson_righthand.rotation[1]), 0]
               } else null end),
-              "geyser_custom_z": (if .display.firstperson_righthand.rotation then {
+              "voxen_dev_z": (if .display.firstperson_righthand.rotation then {
                 "rotation": [0, 0, (.display.firstperson_righthand.rotation[2])]
               } else null end)
             }
           },
-          ("animation.geyser_custom." + ($geometry) + ".firstperson_off_hand"): {
+          ("animation.voxen_dev." + ($geometry) + ".firstperson_off_hand"): {
             "loop": true,
             "bones": {
-              "geyser_custom": {
+              "voxen_dev": {
                 "rotation": [90, 60, -40],
                 "position": [4, 10, 4],
                 "scale": 1.5
               },
-              "geyser_custom_x": {
+              "voxen_dev_x": {
                 "position": (if .display.firstperson_lefthand.translation then [(.display.firstperson_lefthand.translation[0]), (.display.firstperson_lefthand.translation[1]), (- .display.firstperson_lefthand.translation[2])] else null end),
                 "rotation": (if .display.firstperson_lefthand.rotation then [(- .display.firstperson_lefthand.rotation[0]), 0, 0] else [0.1, 0.1, 0.1] end),
                 "scale": (if .display.firstperson_lefthand.scale then (.display.firstperson_lefthand.scale) else null end)
               },
-              "geyser_custom_y": (if .display.firstperson_lefthand.rotation then {
+              "voxen_dev_y": (if .display.firstperson_lefthand.rotation then {
                 "rotation": [0, (- .display.firstperson_lefthand.rotation[1]), 0]
               } else null end),
-              "geyser_custom_z": (if .display.firstperson_lefthand.rotation then {
+              "voxen_dev_z": (if .display.firstperson_lefthand.rotation then {
                 "rotation": [0, 0, (.display.firstperson_lefthand.rotation[2])]
               } else null end)
             }
@@ -1036,18 +1036,18 @@ do
             "format_version": "1.16.100",
             "minecraft:block": {
                 "description": {
-                    "identifier": ("geyser_custom:" + $path_hash)
+                    "identifier": ("voxen_dev:" + $path_hash)
                 },
                 "components": {
                     "minecraft:material_instances": {
                         "*": {
-                            "texture": ("gmdl_atlas_" + $atlas_index),
+                            "texture": ("voxen_atlas_" + $atlas_index),
                             "render_method": $block_material,
                             "face_dimming": false,
                             "ambient_occlusion": false
                         }
                     },
-                    "minecraft:geometry": ("geometry.geyser_custom." + $geometry),
+                    "minecraft:geometry": ("geometry.voxen_dev." + $geometry),
                     "minecraft:placement_filter": {
                       "conditions": [
                           {
@@ -1070,7 +1070,7 @@ do
             "format_version": "1.16.100",
             "minecraft:item": {
                 "description": {
-                    "identifier": ("geyser_custom:" + $path_hash),
+                    "identifier": ("voxen_dev:" + $path_hash),
                     "category": "items"
                 },
                 "components": {
@@ -1091,7 +1091,7 @@ do
         "format_version": "1.10.0",
         "minecraft:attachable": {
           "description": {
-            "identifier": ("geyser_custom:" + $path_hash),
+            "identifier": ("voxen_dev:" + $path_hash),
             "materials": {
               "default": $attachable_material,
               "enchanted": $attachable_material
@@ -1101,7 +1101,7 @@ do
               "enchanted": "textures/misc/enchanted_item_glint"
             },
             "geometry": {
-              "default": ("geometry.geyser_custom." + $geometry)
+              "default": ("geometry.voxen_dev." + $geometry)
             },
             "scripts": {
               "pre_animation": [$v_main, $v_off, $v_head],
@@ -1115,12 +1115,12 @@ do
               ]
             },
             "animations": {
-              "thirdperson_main_hand": ("animation.geyser_custom." + $geometry + ".thirdperson_main_hand"),
-              "thirdperson_off_hand": ("animation.geyser_custom." + $geometry + ".thirdperson_off_hand"),
-              "thirdperson_head": ("animation.geyser_custom." + $geometry + ".head"),
-              "firstperson_main_hand": ("animation.geyser_custom." + $geometry + ".firstperson_main_hand"),
-              "firstperson_off_hand": ("animation.geyser_custom." + $geometry + ".firstperson_off_hand"),
-              "firstperson_head": "animation.geyser_custom.disable"
+              "thirdperson_main_hand": ("animation.voxen_dev." + $geometry + ".thirdperson_main_hand"),
+              "thirdperson_off_hand": ("animation.voxen_dev." + $geometry + ".thirdperson_off_hand"),
+              "thirdperson_head": ("animation.voxen_dev." + $geometry + ".head"),
+              "firstperson_main_hand": ("animation.voxen_dev." + $geometry + ".firstperson_main_hand"),
+              "firstperson_off_hand": ("animation.voxen_dev." + $geometry + ".firstperson_off_hand"),
+              "firstperson_head": "animation.voxen_dev.disable"
             },
             "render_controllers": [ "controller.render.item_default" ]
           }
@@ -1147,7 +1147,7 @@ mkdir ./target/rp/texts
 jq -r '
 
 def format: (.[0:1] | ascii_upcase ) + (.[1:] | gsub( "_(?<a>[a-z])"; (" " + .a) | ascii_upcase));
-.[]|"\("item.geyser_custom:" + .path_hash + ".name")=\(.item | format)"
+.[]|"\("item.voxen_dev:" + .path_hash + ".name")=\(.item | format)"
 
 ' config.json | sponge ./target/rp/texts/en_US.lang
 
@@ -1208,7 +1208,7 @@ if test -f ${merge_input}; then
     status_message process "Merging terrain texture files"
     jq -s '
     {
-      "resource_pack_name": "geyser_custom",
+      "resource_pack_name": "voxen_dev",
       "texture_name": "atlas.terrain",
       "texture_data": (.[1].texture_data + .[0].texture_data)
     }
@@ -1218,7 +1218,7 @@ if test -f ${merge_input}; then
     status_message process "Merging item texture files"
     jq -s '
     {
-      "resource_pack_name": "geyser_custom",
+      "resource_pack_name": "voxen_dev",
       "texture_name": "atlas.items",
       "texture_data": (.[1].texture_data + .[0].texture_data)
     }
@@ -1289,7 +1289,7 @@ if [ -f sprites.json ]; then
     do write_id_hash "${predicate}" "${icon}"  "scratch_files/sprite_hashes.csv" &
   done < scratch_files/sprites.csv > /dev/null
 
-  jq -cR 'split(",")' scratch_files/sprite_hashes.csv | jq -s 'map({("gmdl_" + .[1]): {"textures": .[0]}}) | add' > scratch_files/sprite_hashmap.json
+  jq -cR 'split(",")' scratch_files/sprite_hashes.csv | jq -s 'map({("voxen_" + .[1]): {"textures": .[0]}}) | add' > scratch_files/sprite_hashmap.json
 
   jq -s '
   .[0] as $icon_sprites
@@ -1334,7 +1334,7 @@ mkdir ./target/packaged
 cd ./target/rp > /dev/null && zip -rq8 geyser_resources_preview.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/rp/geyser_resources_preview.mcpack ./target/packaged/geyser_resources_preview.mcpack
 cd ./target/bp > /dev/null && zip -rq8 geyser_behaviors_preview.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/bp/geyser_behaviors_preview.mcpack ./target/packaged/geyser_behaviors_preview.mcpack
 cd ./target/packaged > /dev/null && zip -rq8 geyser_addon.mcaddon . -i "*_preview.mcpack" && cd ../.. > /dev/null
-jq 'delpaths([paths | select(.[-1] | strings | startswith("gmdl_atlas_"))])' ./target/rp/textures/terrain_texture.json | sponge ./target/rp/textures/terrain_texture.json
+jq 'delpaths([paths | select(.[-1] | strings | startswith("voxen_atlas_"))])' ./target/rp/textures/terrain_texture.json | sponge ./target/rp/textures/terrain_texture.json
 cd ./target/rp > /dev/null && zip -rq8 geyser_resources.mcpack . -x "*/.*" && cd ../.. > /dev/null && mv ./target/rp/geyser_resources.mcpack ./target/packaged/geyser_resources.mcpack
 mkdir ./target/unpackaged
 mv ./target/rp ./target/unpackaged/rp && mv ./target/bp ./target/unpackaged/bp
