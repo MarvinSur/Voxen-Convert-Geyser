@@ -156,14 +156,11 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |
-            ## :sparkles: The run has finished! :sparkles:
-            - Download the pack files from the [action run][1] page. :arrow_double_down:
-            - Upload the resource pack `geyser_resources.mcpack` to the `packs` folder of your Geyser folder. :file_folder:
-            - Upload the mappings file `geyser_mappings.json` to the `custom_mappings` folder of your Geyser folder. :page_with_curl:
+            ## :sparkles: Pack telah selesai di convert! :sparkles:
+            - Download pack nya dari halaman, [action run][1]. :arrow_double_down:
+            - Atau klik link pada bawah ini:
 
-            If you notice issues with the converted files, please refer to the action log for errors and open a bug report if you believe there is an issue with the converter. This issue will be closed automatically.
-
-            [1]: https://github.com/azpixel-team/java2bedrock/actions/runs/${{ github.run_id}}
+            [1]: https://github.com/MarvinSur/Voxen-Convert-Geyser/actions/runs/${{ github.run_id}}
           reactions: 'rocket'
 
       - name: Close Issue
@@ -191,9 +188,7 @@ jobs:
               - Convert Pack: *${{ needs.convert-pack.result }}*
               - Post Result: *${{ needs.post-result.result }}*
 
-            If you believe this is an issue with the converter. please open a bug report. This issue will be closed automatically.
-
-            [1]: https://github.com/azpixel-team/java2bedrock/actions/runs/${{ github.run_id}}
+            [1]: https://github.com/MarvinSur/Voxen-Convert-Geyser/actions/runs/${{ github.run_id}}
           reactions: 'x'
       - name: Close issue
         uses: peter-evans/close-issue@v3
