@@ -5,7 +5,7 @@ import glob, os, json
 
 lines = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "a", "b", "c", "d", "e", "f"]
 try:
-    with open("pack/assets/minecraft/font/default.json", "r") as f:
+    with open("pack/assets/nexo/font/default.json", "r") as f:
         data = json.load(f)
 except Exception as e:
     print("[FONT ERROR]")
@@ -122,7 +122,7 @@ def converterpack(glyph):
                     try:
                         namespace = path.split(":")[0]
                         pathnew = path.split(":")[1]
-                        imagefont = Image.open(f"pack/assets/{namespace}/textures/{pathnew}")
+                        imagefont = Image.open(f"pack/assets/minecraft/{namespace}/textures/{pathnew}")
                         image = imagefont.copy()
                         image.save(f"images/{glyph}/0x{glyph}{symbol}.png", "PNG")
                     except Exception as e:
