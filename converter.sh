@@ -351,7 +351,7 @@ if contains(":") then sub("\\:(.+)"; "") else "minecraft" end
 | to_entries | map( ((.value.geyserID = "voxen_\(1+.key)") | .value))
 | INDEX(.geyserID)
 
-' ./assets/minecraft/models/item/*.json > config.json || { status_message error "Invalid JSON exists in block or item folder! See above log."; exit 1; }
+' ./assets/minecraft/models/item/*.json ./assets/minecraft/models/*.json > config.json || { status_message error "Invalid JSON exists in block or item folder! See above log."; exit 1; }
 status_message completion "Initial predicate config generated"
 
 # get a bash array of all model json files in our resource pack
